@@ -49,6 +49,22 @@ const resolvers = {
         book(parent) {
             return db.books.find((b) => b.id === parent.book_id);
         }
+    },
+    Mutation: {
+        deleteBook(_, args) {
+            db.books = db.books.filter((b) => b.id !== args.id)
+
+            return db.books
+        },
+        addBook(_, args) {
+            let book = {
+                ...args.book,
+                id: Math.floor(Math.random() * 10000).toString()
+            }
+            db.books.push(book)
+
+            return book
+        }
     }
 }
 
