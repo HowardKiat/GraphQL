@@ -15,11 +15,11 @@ let authors = [
 ];
 
 let reviews = [
-    { id: "1", rating: 5, content: "Excellent book for beginners!", authorId: "1", bookId: "1" },
-    { id: "2", rating: 4, content: "Very informative, but a bit dense.", authorId: "2", bookId: "2" },
-    { id: "3", rating: 3, content: "Good concepts, but lacking examples.", authorId: "3", bookId: "3" },
-    { id: "4", rating: 4, content: "Helpful for intermediate learners.", authorId: "4", bookId: "4" },
-    { id: "5", rating: 5, content: "A must-read for advanced developers.", authorId: "5", bookId: "5" },
+    { id: "1", rating: 5, content: "Excellent book for beginners!", author_id: "1", book_id: "1" },
+    { id: "2", rating: 4, content: "Very informative, but a bit dense.", author_id: "2", book_id: "2" },
+    { id: "3", rating: 3, content: "Good concepts, but lacking examples.", author_id: "3", book_id: "3" },
+    { id: "4", rating: 4, content: "Helpful for intermediate learners.", author_id: "4", book_id: "4" },
+    { id: "5", rating: 5, content: "A must-read for advanced developers.", author_id: "5", book_id: "5" },
 ];
 
 export default { books, authors, reviews }
