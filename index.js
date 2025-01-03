@@ -52,20 +52,27 @@ const resolvers = {
     },
     Mutation: {
         deleteBook(_, args) {
-            db.books = db.books.filter((b) => b.id !== args.id)
-
-            return db.books
+            db.books = db.books.filter((b) => b.id !== args.id);
+            return db.books;
         },
         addBook(_, args) {
             let book = {
                 ...args.book,
-                id: Math.floor(Math.random() * 10000).toString()
-            }
-            db.books.push(book)
-
-            return book
-        }
-    }
+                id: Math.floor(Math.random() * 10000).toString(),
+            };
+            db.books.push(book);
+            return book;
+        },
+        updateBook(_, args) {
+            db.books = db.books.map((b) => {
+                if (b.id === args.id) {
+                    return { ...b, ...args.edits };
+                }
+                return b;
+            });
+            return db.books.find((b) => b.id === args.id);
+        },
+    },
 }
 
 /* 
