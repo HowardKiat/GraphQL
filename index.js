@@ -19,7 +19,16 @@ const resolvers = {
         },
         authors() {
             return db.authors
-        }
+        },
+        book(_, args) {
+            return db.books.find((book) => book.id === args.id)
+        },
+        review(_, args) {
+            return db.reviews.find((review) => review.id === args.id)
+        },
+        author(_, args) {
+            return db.authors.find((author) => author.id === args.id)
+        },
     }
 }
 
