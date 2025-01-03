@@ -32,11 +32,11 @@ books {
 //Server Setup
 const server = new ApolloServer({
     typeDefs,      //- define the types of data
-    //resolvers
+    resolvers
 })
 
 const { url } = await startStandaloneServer(server, {
     listen: { port: 4000 }
 })
 
-console.log('Serve is Ready to Go', 4000)
+console.log('Server is Ready to Go', 4000)
