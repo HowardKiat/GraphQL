@@ -93,18 +93,34 @@ async function deleteBook() {
 // MENU for CLI
 async function mainMenu(user) {
     while (true) {
-        const { action } = await inquirer.prompt([
+        console.log('\nChoose an action:');
+        const options = [
+            'View Books',
+            ...(user.role === 'admin' ? ['Add Book', 'Delete Book'] : []),
+            'Logout',
+        ];
+
+        options.forEach((option, index) => {
+            console.log(`${index + 1}. ${option}`);
+        });
+
+        const { actionNumber } = await inquirer.prompt([
             {
-                type: 'list',
-                name: 'action',
-                message: 'Choose an action:',
-                choices: [
-                    'View Books',
-                    ...(user.role === 'admin' ? ['Add Book', 'Delete Book'] : []),
-                    'Logout',
-                ],
+                type: 'input',
+                name: 'actionNumber',
+                message: 'Enter the number of your choice:',
+                validate: (input) => {
+                    const num = parseInt(input);
+                    if (isNaN(num) || num < 1 || num > options.length) {
+                        return `Please enter a valid number between 1 and ${options.length}.`;
+                    }
+                    return true;
+                },
             },
         ]);
+
+        const actionIndex = parseInt(actionNumber) - 1;
+        const action = options[actionIndex];
 
         if (action === 'View Books') {
             await viewBooks();
