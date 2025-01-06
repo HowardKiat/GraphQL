@@ -4,7 +4,7 @@ import { request, gql } from 'graphql-request';
 // GraphQL server URL
 const GRAPHQL_URL = 'http://localhost:4000/';
 
-//User Accounts
+// User Accounts
 const users = [
     { username: 'admin', password: 'password', role: 'admin' },
     { username: 'howard', password: '12345678', role: 'user' },
@@ -27,7 +27,7 @@ async function login() {
     return user;
 }
 
-// Function Display Book
+// Function to view books
 async function viewBooks() {
     const query = gql`
         query {
@@ -42,7 +42,7 @@ async function viewBooks() {
     console.table(data.books);
 }
 
-// Function Add Book
+// Function to add a book
 async function addBook() {
     const { title, platform } = await inquirer.prompt([
         { type: 'input', name: 'title', message: 'Enter book title:' },
@@ -70,7 +70,7 @@ async function addBook() {
     console.log('Book added successfully:', data.addBook);
 }
 
-// Function Delete Book
+// Function to delete a book
 async function deleteBook() {
     const { bookId } = await inquirer.prompt([
         { type: 'input', name: 'bookId', message: 'Enter book ID to delete:' },
@@ -90,13 +90,86 @@ async function deleteBook() {
     console.log('Remaining books:', data.deleteBook);
 }
 
+async function updateBook() {
+    const { bookId } = await inquirer.prompt([
+        { type: 'input', name: 'bookId', message: 'Enter book ID to edit:' }
+    ]);
+
+    const { fieldToEdit } = await inquirer.prompt([
+        {
+            type: 'input',
+            name: 'fieldToEdit',
+            message: 'Which field would you like to edit? (Enter 1 for Title, 2 for Platform):',
+            validate: (input) => {
+                const num = parseInt(input);
+                if (isNaN(num) || num < 1 || num > 2) {
+                    return 'Please enter 1 for Title or 2 for Platform.';
+                }
+                return true;
+            }
+        }
+    ]);
+
+    let mutation;
+    let variables = {
+        id: bookId,
+        edits: {}
+    };
+
+    if (fieldToEdit === '1') {
+        const { newTitle } = await inquirer.prompt([
+            { type: 'input', name: 'newTitle', message: 'Enter new book title:' }
+        ]);
+
+        if (!newTitle.trim()) {
+            console.log('Title cannot be empty.');
+            return;
+        }
+
+        variables.edits.title = newTitle.trim();
+
+    } else if (fieldToEdit === '2') {
+        const { newPlatform } = await inquirer.prompt([
+            { type: 'input', name: 'newPlatform', message: 'Enter new platform(s) (comma-separated):' }
+        ]);
+
+        const platforms = newPlatform.split(',').map(p => p.trim()).filter(p => p);
+        if (platforms.length === 0) {
+            console.log('Platforms cannot be empty.');
+            return;
+        }
+
+        variables.edits.platform = platforms;
+    }
+
+    mutation = gql`
+        mutation UpdateBook($id: ID!, $edits: EditBookInput!) {
+            updateBook(id: $id, edits: $edits) {
+                id
+                title
+                platform
+            }
+        }
+    `;
+
+    try {
+        const data = await request(GRAPHQL_URL, mutation, variables);
+        if (data.updateBook) {
+            console.log('Book updated successfully:', data.updateBook);
+        } else {
+            console.log('Failed to update book. Book might not exist.');
+        }
+    } catch (error) {
+        console.error('Error updating book:', error.message);
+    }
+}
 // MENU for CLI
 async function mainMenu(user) {
     while (true) {
         console.log('\nChoose an action:');
         const options = [
             'View Books',
-            ...(user.role === 'admin' ? ['Add Book', 'Delete Book'] : []),
+            ...(user.role === 'admin' ? ['Add Book', 'Delete Book', 'Edit Book'] : []),
             'Logout',
         ];
 
@@ -126,6 +199,8 @@ async function mainMenu(user) {
             await viewBooks();
         } else if (action === 'Add Book') {
             await addBook();
+        } else if (action === 'Edit Book') {
+            await updateBook();
         } else if (action === 'Delete Book') {
             await deleteBook();
         } else if (action === 'Logout') {

@@ -23,5 +23,3 @@ let reviews = [
 ];
 
 export default { books, authors, reviews }
-
-
